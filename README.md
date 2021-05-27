@@ -1,4 +1,4 @@
-### Scripts for making fragment recruitment plots using LASTAL. Takes into account coordinates if multiple contigs are in the reference. 
+#### Scripts for making fragment recruitment plots using LASTAL. Takes into account coordinates if multiple contigs are in the reference. 
 
 Positional arguments: <FASTQ file to map> <Reference FNA to map against> <output prefix for files>
 
