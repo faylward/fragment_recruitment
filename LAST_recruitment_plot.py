@@ -43,26 +43,36 @@ for i in sorted_dict:
 contig_bounds.close()
 
 # parse through lastout file and generate final coordinates and output file
-coord_out = open(output+".finalcoords.txt", "w")
-coord_out.write("coord\tpercid\n")
 handle = open(output+".lastout", "r")
+bit_dict = defaultdict(float)
+hit2coord = {}
+hit2percid = {}
 for i in handle.readlines():
 	if i.startswith("#"):
 		pass
 	else:
 		line = i.rstrip()
 		tabs = line.split("\t")
+		query = tabs[0]
 		contig = tabs[1]
 		percid = tabs[2]
 		score = tabs[11]
 		aln_length = tabs[3]
 
-		if score > bit_cutoff and percid > percid_cutoff and  aln_length > alnlength_cutoff:
+		if score > bit_cutoff and percid > percid_cutoff and  aln_length > alnlength_cutoff and score > bit_dict[query]:
+			bit_dict[query] = score
 			start = float(tabs[8])
 			end = float(tabs[9])
 			mean = np.mean([start, end])
 			final_coord = mean + added_values[contig]
-			coord_out.write(str(final_coord) +"\t"+ str(percid) +"\n")
+			hit2coord[query] = final_coord
+			hit2percid[query] = percid
+
+coord_out = open(output+".finalcoords.txt", "w")
+coord_out.write("readid\tcoord\tpercid\n")
+for j in hit2coord:
+	coord_out.write(j +"\t"+ str(hit2coord[j]) +"\t"+ str(hit2percid[j]) +"\n")
+
 coord_out.close()
 
 # cleanup
