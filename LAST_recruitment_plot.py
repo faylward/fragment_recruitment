@@ -3,9 +3,16 @@ from collections import defaultdict
 from Bio import SeqIO
 import numpy as np
 
+### Sample Command: python LAST_recruitment_plot.py ERR598994_1.fq sample.fna testlastout
+
 inputfile = sys.argv[1] # the FASTQ file to map
 reference = sys.argv[2] # the contig file to map against
 output = sys.argv[3]    # project prefix for all output files
+
+# CUTOFFS: Change these if you want to make the search more or less stringent
+bit_cutoff = 50
+alnlength_cutoff = 50
+percid_cutoff = 70
 
 # make LAST db
 refdb = reference +".lastdb"
@@ -47,18 +54,24 @@ for i in handle.readlines():
 		tabs = line.split("\t")
 		contig = tabs[1]
 		percid = tabs[2]
-		start = float(tabs[8])
-		end = float(tabs[9])
-		mean = np.mean([start, end])
-		final_coord = mean + added_values[contig]
-		coord_out.write(str(final_coord) +"\t"+ str(percid) +"\n")
+		score = tabs[11]
+		aln_length = tabs[3]
+
+		if score > bit_cutoff and percid > percid_cutoff and  aln_length > alnlength_cutoff:
+			start = float(tabs[8])
+			end = float(tabs[9])
+			mean = np.mean([start, end])
+			final_coord = mean + added_values[contig]
+			coord_out.write(str(final_coord) +"\t"+ str(percid) +"\n")
 coord_out.close()
 
 # cleanup
 os.remove(output+".lastout")
 os.remove("stderr.txt")
 os.remove("stdout.txt")
-os.remove("*.lastdb.*")
+for j in os.listdir("."):
+	if j.startswith(reference +".lastdb"):
+		os.remove(j)
 
 
 
