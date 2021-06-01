@@ -55,9 +55,9 @@ for i in handle.readlines():
 		tabs = line.split("\t")
 		query = tabs[0]
 		contig = tabs[1]
-		percid = tabs[2]
-		score = tabs[11]
-		aln_length = tabs[3]
+		percid = float(tabs[2])
+		score = float(tabs[11])
+		aln_length = float(tabs[3])
 
 		if score > bit_cutoff and percid > percid_cutoff and  aln_length > alnlength_cutoff and score > bit_dict[query]:
 			bit_dict[query] = score
